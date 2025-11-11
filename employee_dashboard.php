@@ -5,24 +5,7 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-// -----------------------------------------------------
-// Database connection settings
-// -----------------------------------------------------
-$servername = "localhost";
-$username   = "root";
-$password   = "";   // leave empty since phpMyAdmin uses no password
-$database   = "employee_dashboard_db";
-$port       = 3306;
-
-// -----------------------------------------------------
-// Create connection
-// -----------------------------------------------------
-$conn = new mysqli($servername, $username, $password, $database, $port);
-
-// Check connection
-if ($conn->connect_error) {
-    die("<h2 style='color:red; text-align:center;'>❌ Connection failed: " . $conn->connect_error . "</h2>");
-}
+require_once('db/connect.php');
 
 // -----------------------------------------------------
 // Query to select first 10 rows
