@@ -1,0 +1,51 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Quick API Test</title>
+<h3>Quick API Test</h3>
+<form onsubmit="go(event)">
+  <select id="action">
+    <option>view</option>
+    <option>update_salary</option>
+    <option>change_department</option>
+    <option>change_title</option>
+    <option>fire</option>
+    <option>list_departments</option>
+    <option>list_titles</option>
+  </select>
+  <input id="emp_no" placeholder="emp_no">
+  <input id="new_salary" placeholder="new_salary">
+  <input id="dept_no" placeholder="dept_no">
+  <input id="title" placeholder="title">
+  <button>Send</button>
+</form>
+<pre id="out"></pre>
+<script>
+async function go(e) {
+    e.preventDefault();
+    const a = document.getElementById('action').value;
+    const emp_no = document.getElementById('emp_no').value;
+    const new_salary = document.getElementById('new_salary').value;
+    const dept_no = document.getElementById('dept_no').value;
+    const title = document.getElementById('title').value;
+    
+    const body = new URLSearchParams({
+        emp_no: emp_no,
+        new_salary: new_salary,
+        dept_no: dept_no,
+        title: title
+    });
+    
+    const url = (a.startsWith('list') || a === 'view')
+        ? `employee.php?action=${a}&emp_no=${encodeURIComponent(emp_no || '')}`
+        : `employee.php?action=${a}`;
+    
+    const res = await fetch(url, {
+        method: (a.startsWith('list') || a === 'view') ? 'GET' : 'POST',
+        body: (a.startsWith('list') || a === 'view') ? undefined : body,
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+    });
+    
+    out.textContent = await res.text();
+}
+</script>
+

@@ -5,30 +5,15 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-// -----------------------------------------------------
-// Database connection settings
-// -----------------------------------------------------
-$servername = "localhost";
-$username   = "root";
-$password   = "";   // leave empty since phpMyAdmin uses no password
-$database   = "employee_dashboard_db";
-$port       = 3306;
+require_once __DIR__ . '/database/db_connect.php';
 
-// -----------------------------------------------------
-// Create connection
-// -----------------------------------------------------
-$conn = new mysqli($servername, $username, $password, $database, $port);
-
-// Check connection
-if ($conn->connect_error) {
-    die("<h2 style='color:red; text-align:center;'>❌ Connection failed: " . $conn->connect_error . "</h2>");
-}
+$pdo = db_connect();
 
 // -----------------------------------------------------
 // Query to select first 10 rows
 // -----------------------------------------------------
-$sql = "SELECT emp_no, salary, from_date, to_date FROM salaries LIMIT 10";
-$result = $conn->query($sql);
+$stmt = $pdo->query('SELECT emp_no, salary, from_date, to_date FROM salaries ORDER BY from_date DESC LIMIT 10');
+$rows = $stmt->fetchAll();
 ?>
 
 <!DOCTYPE html>
@@ -78,21 +63,18 @@ $result = $conn->query($sql);
         </tr>
 
         <?php
-        if ($result && $result->num_rows > 0) {
-            // Output each row
-            while ($row = $result->fetch_assoc()) {
+        if ($rows) {
+            foreach ($rows as $row) {
                 echo "<tr>";
-                echo "<td>{$row['emp_no']}</td>";
-                echo "<td>{$row['salary']}</td>";
-                echo "<td>{$row['from_date']}</td>";
-                echo "<td>{$row['to_date']}</td>";
+                echo "<td>" . htmlspecialchars((string)$row['emp_no']) . "</td>";
+                echo "<td>" . htmlspecialchars((string)$row['salary']) . "</td>";
+                echo "<td>" . htmlspecialchars((string)$row['from_date']) . "</td>";
+                echo "<td>" . htmlspecialchars(isset($row['to_date']) ? (string)$row['to_date'] : '') . "</td>";
                 echo "</tr>";
             }
         } else {
             echo "<tr><td colspan='4'>No results found</td></tr>";
         }
-
-        $conn->close();
         ?>
     </table>
 </body>
