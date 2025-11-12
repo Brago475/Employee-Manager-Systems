@@ -1,1 +1,0 @@
-// this for imgs and videos only
