@@ -70,8 +70,8 @@ if (isset($_SESSION['emp_no'])) {
 <div class="container">
     <p style="font-size:18px;">Please select your login type:</p>
     <!-- Both buttons lead to the same login page -->
-    <a href="views/login.php" class="button">Employee Login</a>
-    <a href="views/login.php" class="button">Manager Login</a>
+    <a href="login.php" class="button">Employee Login</a>
+    <a href="login.php" class="button">Manager Login</a>
 </div>
 
 <footer>
