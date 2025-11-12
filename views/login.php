@@ -3,62 +3,45 @@ error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
 session_start();
-require_once('../database/db_connect.php');
+require_once __DIR__ . '/../database/db_connect.php'; // gives you $pdo (PDO)
 
 $error = '';
 
-// Check if database connection was successful
-if (!isset($conn) || $conn->connect_error) {
-    $error = "Database connection failed. Please try again later.";
-}
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && empty($error)) {
-    $emp_no = trim($_POST['emp_no']);
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $emp_no = trim($_POST['emp_no'] ?? '');
 
     if (!empty($emp_no) && is_numeric($emp_no)) {
-        // Fetch employee info
-        $sql = "SELECT emp_no, first_name, last_name FROM employees WHERE emp_no = ?";
-        $stmt = $conn->prepare($sql);
-        
-        if (!$stmt) {
-            $error = "Database error: " . htmlspecialchars($conn->error);
-        } else {
-            $stmt->bind_param("i", $emp_no);
-            $stmt->execute();
-            $result = $stmt->get_result();
+        try {
+            // Fetch employee info
+            $stmt = $pdo->prepare('SELECT emp_no, first_name, last_name FROM employees WHERE emp_no = ?');
+            $stmt->execute([$emp_no]);
+            $employee = $stmt->fetch();
 
-            if ($result && $result->num_rows > 0) {
-                $employee = $result->fetch_assoc();
-
+            if ($employee) {
                 // Store basic info in session
                 $_SESSION['emp_no'] = $employee['emp_no'];
                 $_SESSION['first_name'] = $employee['first_name'];
                 $_SESSION['last_name'] = $employee['last_name'];
 
                 // Check if the employee is a manager
-                $mgr_check = $conn->prepare("SELECT * FROM dept_manager WHERE emp_no = ?");
-                
-                if (!$mgr_check) {
-                    $error = "Database error: " . htmlspecialchars($conn->error);
+                $mgr_check = $pdo->prepare('SELECT * FROM dept_manager WHERE emp_no = ?');
+                $mgr_check->execute([$emp_no]);
+                $is_mgr = $mgr_check->fetch() !== false;
+
+                $_SESSION['is_manager'] = $is_mgr;
+
+                // Redirect based on role
+                if ($is_mgr) {
+                    header("Location: manager_dashboard.php");
                 } else {
-                    $mgr_check->bind_param("i", $emp_no);
-                    $mgr_check->execute();
-                    $is_mgr = $mgr_check->get_result()->num_rows > 0;
-
-                    $_SESSION['is_manager'] = $is_mgr;
-
-                    // Redirect based on role
-                    if ($is_mgr) {
-                        header("Location: manager_dashboard.php");
-                    } else {
-                        header("Location: employee_dashboard.php");
-                    }
-                    exit;
+                    header("Location: employee_dashboard.php");
                 }
+                exit;
             } else {
                 $error = "Invalid Employee Number. Please try again.";
             }
-            $stmt->close();
+        } catch (PDOException $e) {
+            $error = "Database error. Please try again later.";
         }
     } else {
         $error = "Please enter a valid numeric Employee Number.";
@@ -139,4 +122,3 @@ button:hover {
 </div>
 </body>
 </html>
-<?php $conn->close(); ?>
