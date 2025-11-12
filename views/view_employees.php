@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once('../db/connect.php');
+require_once('../database/db_connect.php');
 
 // -----------------------------------------------------
 // Access Control: only managers can access this page

@@ -1,5 +1,5 @@
 <?php
-require_once('../db/connect.php');
+require_once('../database/db_connect.php');
 include('../layout/header.php');
 
 $message = "";

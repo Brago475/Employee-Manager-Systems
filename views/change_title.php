@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once('../db/connect.php');
+require_once('../database/db_connect.php');
 
 // Redirect if not logged in
 if (!isset($_SESSION['emp_no'])) {

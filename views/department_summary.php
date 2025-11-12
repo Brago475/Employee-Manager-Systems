@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once('../db/connect.php');
+require_once('../database/db_connect.php');
 
 // Restrict access: only manager or logged-in employee
 if (!isset($_SESSION['emp_no'])) {

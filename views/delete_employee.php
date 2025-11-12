@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once('../db/connect.php');
+require_once('../database/db_connect.php');
 
 // Only managers should delete
 if (!isset($_SESSION['emp_no']) || $_SESSION['role'] !== 'manager') {
