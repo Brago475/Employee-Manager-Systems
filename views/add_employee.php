@@ -1,43 +1,39 @@
 <?php
-require_once('../database/db_connect.php');
-include('../layout/header.php');
+session_start();
+require_once __DIR__ . '/../database/db_connect.php';
+require_once __DIR__ . '/../layout/header.php';
 
-$message = "";
+// Only managers should add employees
+if (!isset($_SESSION['is_manager']) || $_SESSION['is_manager'] !== true) {
+    die("<h3 style='color:red; text-align:center; margin-top:50px;'>Access Denied — Manager Privileges Required.</h3>");
+}
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $fname = trim($_POST['first_name']);
-    $lname = trim($_POST['last_name']);
-    $birth = $_POST['birth_date'];
-    $hire  = $_POST['hire_date'];
-    $gender = $_POST['gender'];
-
-    // Prepared statement for safety
-    $stmt = $conn->prepare("INSERT INTO employees (first_name, last_name, birth_date, hire_date, gender) VALUES (?, ?, ?, ?, ?)");
-    $stmt->bind_param("sssss", $fname, $lname, $birth, $hire, $gender);
-
-    if ($stmt->execute()) {
-        $message = "<p style='color:green;'>Employee added successfully!</p>";
-    } else {
-        $message = "<p style='color:red;'>Error: {$conn->error}</p>";
+$message = '';
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+  $first = trim($_POST['first_name'] ?? '');
+  $last  = trim($_POST['last_name'] ?? '');
+  $birth = $_POST['birth_date'] ?? '';
+  $hire  = $_POST['hire_date'] ?? '';
+  if ($first !== '' && $last !== '' && $birth !== '' && $hire !== '') {
+    try {
+      $pdo->prepare("INSERT INTO employees(first_name,last_name,birth_date,hire_date) VALUES(?,?,?,?)")
+          ->execute([$first,$last,$birth,$hire]);
+      $message = "<p style='color:green;'>Employee added.</p>";
+    } catch(Throwable $e) {
+      $message = "<p style='color:red;'>Insert failed.</p>";
     }
-    $stmt->close();
+  } else {
+    $message = "<p style='color:red;'>All fields required.</p>";
+  }
 }
 ?>
-
-<h2 style="text-align:center;">Add New Employee</h2>
-<form method="POST" style="width:300px; margin:auto; background:white; padding:20px; box-shadow:0 0 10px rgba(0,0,0,0.1);">
-    <input type="text" name="first_name" placeholder="First Name" required>
-    <input type="text" name="last_name" placeholder="Last Name" required>
-    <input type="date" name="birth_date" required>
-    <input type="date" name="hire_date" required>
-    <select name="gender" required>
-        <option value="">Select Gender</option>
-        <option value="M">Male</option>
-        <option value="F">Female</option>
-    </select>
-    <button type="submit" style="background-color:#007BFF; color:white; border:none; padding:10px;">Add Employee</button>
-    <?= $message ?>
+<h2>Add Employee</h2>
+<form method="post">
+  <label>First Name <input name="first_name" required></label>
+  <label>Last Name <input name="last_name" required></label>
+  <label>Birth Date <input type="date" name="birth_date" required></label>
+  <label>Hire Date <input type="date" name="hire_date" required></label>
+  <button>Add</button>
 </form>
-
-<?php include('../layout/footer.php'); ?>
-<?php $conn->close(); ?>
+<?= $message ?>
+<?php require_once __DIR__ . '/../layout/footer.php'; ?>
