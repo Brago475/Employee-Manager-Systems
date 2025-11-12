@@ -1,45 +1,32 @@
 <?php
 session_start();
-require_once('../db/connect.php');
+require_once __DIR__ . '/../database/db_connect.php';
+require_once __DIR__ . '/../layout/header.php';
 
 // Only managers should delete
-if (!isset($_SESSION['emp_no']) || $_SESSION['role'] !== 'manager') {
-    header("Location: ../views/employee_login.php");
-    exit;
+if (!isset($_SESSION['is_manager']) || $_SESSION['is_manager'] !== true) {
+    die("<h3 style='color:red; text-align:center; margin-top:50px;'>Access Denied — Manager Privileges Required.</h3>");
 }
 
-$emp_no = $_GET['emp_no'] ?? null;
-$message = "";
-
-// No ID provided
-if (!$emp_no) {
-    $message = "<p style='color:red; text-align:center;'>No employee selected for deletion.</p>";
-} else {
-    // Use prepared statement for safety
-    $stmt = $conn->prepare("DELETE FROM employees WHERE emp_no = ?");
-    $stmt->bind_param("i", $emp_no);
-
-    if ($stmt->execute()) {
-        $message = "<p style='color:green; text-align:center;'>Employee #{$emp_no} deleted successfully!</p>";
-    } else {
-        $message = "<p style='color:red; text-align:center;'>Error deleting record: {$conn->error}</p>";
+$message = '';
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+  $emp_no = (int)($_POST['emp_no'] ?? 0);
+  if ($emp_no > 0) {
+    try {
+      $pdo->prepare("DELETE FROM employees WHERE emp_no = ?")->execute([$emp_no]);
+      $message = "<p style='color:green;text-align:center;'>Employee deleted.</p>";
+    } catch(Throwable $e) {
+      $message = "<p style='color:red;text-align:center;'>Error deleting employee.</p>";
     }
-
-    $stmt->close();
+  } else {
+    $message = "<p style='color:red;text-align:center;'>emp_no required.</p>";
+  }
 }
-
-// Include layout header
-include('../layout/header.php');
 ?>
-
-<div style="width:60%; max-width:600px; margin:50px auto; background-color:white; padding:30px 40px; border-radius:8px; box-shadow:0 0 10px rgba(0,0,0,0.1); text-align:center;">
-    <h2>Delete Employee</h2>
-    <?= $message ?>
-    <br>
-    <a href="view_employees.php" style="color:#007BFF; text-decoration:none;">← Back to Employee List</a>
-</div>
-
-<?php
-include('../layout/footer.php');
-$conn->close();
-?>
+<h2>Delete Employee</h2>
+<form method="post">
+  <label>Employee # <input name="emp_no" required></label>
+  <button>Delete</button>
+</form>
+<?= $message ?>
+<?php require_once __DIR__ . '/../layout/footer.php'; ?>
