@@ -52,7 +52,7 @@ $employee = $stmt->fetch();
     <p><strong>Title End Date:</strong> <?= htmlspecialchars($employee['title_end'] ?? 'N/A'); ?></p>
     <p><strong>Current Salary:</strong> $<?= number_format($employee['salary'] ?? 0, 2); ?></p>
 
-    <?php if ($_SESSION['is_manager'] ?? false): ?>
+<?php if (!empty($_SESSION['is_manager']) && $_SESSION['is_manager'] == 1): ?>
       <div class="actions" style="margin-top:30px; text-align:right;">
         <button class="action-btn" style="background-color:#007BFF; color:white; border:none; padding:10px 15px; margin:8px; border-radius:4px; cursor:pointer;"
           onclick="window.location='change_department.php?emp_no=<?= $emp_no ?>'">

@@ -47,10 +47,15 @@ CREATE TABLE titles (
 CREATE INDEX idx_titles_current ON titles (emp_no, to_date);
 
 CREATE TABLE salaries (
-    emp_no     INT UNSIGNED NOT NULL,
-    salary     INT          NOT NULL,
-    from_date  DATE         NOT NULL,
-    to_date    DATE         DEFAULT NULL,
+    emp_no      INT UNSIGNED  NOT NULL AUTO_INCREMENT,
+    first_name  VARCHAR(60)   NOT NULL,
+    last_name   VARCHAR(60)   NOT NULL,
+    birth_date  DATE          NOT NULL,
+    salary      INT           NOT NULL,
+    hire_date   DATE          NOT NULL,
+    start_date  DATE          NULL,
+    from_date   DATE          NOT NULL,
+    to_date     DATE          DEFAULT NULL,
     PRIMARY KEY (emp_no, from_date),
     CONSTRAINT fk_salaries_employee FOREIGN KEY (emp_no)
         REFERENCES employees (emp_no)
