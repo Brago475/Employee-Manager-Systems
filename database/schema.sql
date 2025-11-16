@@ -1,5 +1,6 @@
 -- Schema definition for Employee Manager System
 -- Drops existing tables (in dependency order) and recreates them with constraints.
+USE employee_dashboard_db;
 
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
