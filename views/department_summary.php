@@ -9,16 +9,17 @@ if (!isset($_SESSION['emp_no'])) {
     exit;
 }
 
+
 $sql = "
-SELECT d.dept_no, d.dept_name,
-       COUNT(de.emp_no) AS employee_count
-FROM departments d
-LEFT JOIN dept_emp de
-  ON de.dept_no = d.dept_no
- AND (de.to_date IS NULL OR de.to_date > CURRENT_DATE)
-GROUP BY d.dept_no, d.dept_name
-ORDER BY d.dept_name
+SELECT d.dept_no, d.dept_name, e.first_name, e.last_name
+FROM departments d 
+JOIN dept_manager dm ON dm.dept_no = d.dept_no AND (dm.to_date IS NULL OR dm.to_date > CURRENT_DATE)
+JOIN employees e ON e.emp_no = dm.emp_no
+ORDER BY d.dept_name;
 ";
+
+
+
 $rows = $pdo->query($sql)->fetchAll();
 ?>
 <h2>Department Summary</h2>
@@ -31,7 +32,7 @@ $rows = $pdo->query($sql)->fetchAll();
       <tr>
         <td><?= htmlspecialchars($r['dept_no']) ?></td>
         <td><?= htmlspecialchars($r['dept_name']) ?></td>
-        <td><?= htmlspecialchars($r['employee_count']) ?></td>
+    <td><?= htmlspecialchars($r['first_name'] . ' ' . $r['last_name']) ?></td>
       </tr>
     <?php endforeach; ?>
   </tbody>
