@@ -30,20 +30,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $message = "<p style='color:red;text-align:center;'>emp_no and dept_no required.</p>";
   }
 }
-
-/* --------------------------------------------------
-   NEW CODE ADDED: Get departments with employee count
-   -------------------------------------------------- */
-$departments = $pdo->query("
-    SELECT d.dept_no, d.dept_name, COUNT(de.emp_no) AS employee_count
-    FROM departments d
-    LEFT JOIN dept_emp de 
-        ON d.dept_no = de.dept_no 
-        AND (de.to_date IS NULL OR de.to_date > CURRENT_DATE)
-    GROUP BY d.dept_no, d.dept_name
-    ORDER BY d.dept_name ASC
-")->fetchAll(PDO::FETCH_ASSOC);
-
+$sql = "
+SELECT d.dept_no, d.dept_name, COUNT(de.emp_no) AS employee_count
+FROM departments d
+LEFT JOIN dept_emp de
+  ON d.dept_no = de.dept_no
+ AND (de.to_date IS NULL OR de.to_date > CURRENT_DATE)
+GROUP BY d.dept_no, d.dept_name
+ORDER BY d.dept_name
+";
+$departments = $pdo->query($sql)->fetchAll();
 ?>
 <h2>Change Department</h2>
 <form method="post">
@@ -54,9 +50,7 @@ $departments = $pdo->query("
 
       <!-- UPDATED DROPDOWN WITH COUNTS -->
       <?php foreach($departments as $d): ?>
-        <option value="<?= htmlspecialchars($d['dept_no']) ?>">
-            <?= htmlspecialchars($d['dept_name']) ?> (<?= $d['employee_count'] ?> employees)
-        </option>
+        <option value="<?= htmlspecialchars($d['dept_no']) ?>"><?= htmlspecialchars($d['dept_name']) ?> (<?= htmlspecialchars($d['employee_count']) ?> employees)</option>
       <?php endforeach; ?>
 
     </select>

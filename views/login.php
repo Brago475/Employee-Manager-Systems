@@ -24,11 +24,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $_SESSION['last_name'] = $employee['last_name'];
 
                 // Check if the employee is a manager
-                $mgr_check = $pdo->prepare('SELECT * FROM dept_manager WHERE emp_no = ?');
+                $mgr_check = $pdo->prepare('SELECT COUNT(*) FROM dept_manager WHERE emp_no = ? AND (to_date IS NULL OR to_date > CURRENT_DATE)');
                 $mgr_check->execute([$emp_no]);
-                $is_mgr = $mgr_check->fetch() !== false;
+                $mgr_count = $mgr_check->fetchColumn();
+                $is_mgr = $mgr_count > 0;
 
                 $_SESSION['is_manager'] = $is_mgr;
+                $_SESSION['role'] = $is_mgr ? 'manager' : 'employee';
 
                 // Redirect based on role
                 if ($is_mgr) {
