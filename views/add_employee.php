@@ -30,7 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       
       $pdo->prepare("INSERT INTO employees(emp_no, first_name, last_name, birth_date, hire_date) VALUES(?,?,?,?,?)")
           ->execute([$next_emp_no, $first, $last, $birth, $hire]);
-      $message = "<p style='color:green;'>Employee #{$next_emp_no} added successfully! <a href='/views/view_employees.php'>View all employees</a></p>";
+      $message = "<p style='color:green;'>Employee #{$next_emp_no} added successfully! <a href='/Employee-Manager-Systems/views/view_employees.php'>View all employees</a></p>";
     } catch(Throwable $e) {
       $message = "<p style='color:red;'>Insert failed. Please check your input.</p>";
     }
