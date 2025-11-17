@@ -12,18 +12,28 @@ $message = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $first = trim($_POST['first_name'] ?? '');
   $last  = trim($_POST['last_name'] ?? '');
-  $birth = $_POST['birth_date'] ?? '';
-  $hire  = $_POST['hire_date'] ?? '';
-  if ($first !== '' && $last !== '' && $birth !== '' && $hire !== '') {
-    try {
-      $pdo->prepare("INSERT INTO employees(first_name,last_name,birth_date,hire_date) VALUES(?,?,?,?)")
-          ->execute([$first,$last,$birth,$hire]);
-      $message = "<p style='color:green;'>Employee added.</p>";
-    } catch(Throwable $e) {
-      $message = "<p style='color:red;'>Insert failed.</p>";
-    }
+  $birth = trim($_POST['birth_date'] ?? '');
+  $hire  = trim($_POST['hire_date'] ?? '');
+  
+  // Validate non-empty fields
+  if ($first === '' || $last === '' || $birth === '' || $hire === '') {
+    $message = "<p style='color:red;'>All fields are required.</p>";
+  } 
+  // Validate date format (YYYY-MM-DD)
+  elseif (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $birth) || !preg_match('/^\d{4}-\d{2}-\d{2}$/', $hire)) {
+    $message = "<p style='color:red;'>Invalid date format. Please use YYYY-MM-DD.</p>";
   } else {
-    $message = "<p style='color:red;'>All fields required.</p>";
+    try {
+      // Get next available emp_no
+      $max_stmt = $pdo->query("SELECT COALESCE(MAX(emp_no), 10000) + 1 AS next_emp_no FROM employees");
+      $next_emp_no = $max_stmt->fetch()['next_emp_no'];
+      
+      $pdo->prepare("INSERT INTO employees(emp_no, first_name, last_name, birth_date, hire_date) VALUES(?,?,?,?,?)")
+          ->execute([$next_emp_no, $first, $last, $birth, $hire]);
+      $message = "<p style='color:green;'>Employee #{$next_emp_no} added successfully! <a href='/views/view_employees.php'>View all employees</a></p>";
+    } catch(Throwable $e) {
+      $message = "<p style='color:red;'>Insert failed. Please check your input.</p>";
+    }
   }
 }
 ?>

@@ -36,7 +36,7 @@ $rows = $pdo->query($sql)->fetchAll();
 <table border="1" cellpadding="6" cellspacing="0">
   <thead>
     <tr>
-      <th>Emp #</th><th>Name</th><th>Department</th><th>Title</th><th>Salary</th>
+      <th>Emp #</th><th>Name</th><th>Department</th><th>Title</th><th>Salary</th><th>Actions</th>
     </tr>
   </thead>
   <tbody>
@@ -47,6 +47,12 @@ $rows = $pdo->query($sql)->fetchAll();
         <td><?= htmlspecialchars($r['dept_name'] ?? '') ?></td>
         <td><?= htmlspecialchars($r['title'] ?? '') ?></td>
         <td><?= htmlspecialchars($r['salary'] ?? '') ?></td>
+        <td>
+          <form method="POST" action="/api/employee.php?action=fire" style="display:inline;">
+            <input type="hidden" name="emp_no" value="<?= htmlspecialchars($r['emp_no']) ?>">
+            <button type="submit" onclick="return confirm('Are you sure you want to delete this employee?')">Delete</button>
+          </form>
+        </td>
       </tr>
     <?php endforeach; ?>
   </tbody>
