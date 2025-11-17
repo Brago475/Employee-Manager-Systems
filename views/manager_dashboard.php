@@ -34,6 +34,7 @@ a:hover {
 <body>
 <h1>Welcome Manager, <?= htmlspecialchars($_SESSION['first_name']); ?>!</h1>
 <p>Use the options below to manage employees:</p>
+<a href="../views/manager_profile.php" style="background-color:#007bff;;">View My information</a>
 <a href="../views/view_employees.php">View All Employees</a>
 <a href="../views/add_employee.php">Add New Employee</a>
 <a href="../views/department_summary.php">View Department Summary</a>

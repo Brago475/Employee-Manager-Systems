@@ -5,6 +5,10 @@ USE employee_dashboard_db;
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
 
+DROP DATABASE IF EXISTS employee_dashboard_db;
+CREATE DATABASE employee_dashboard_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE employee_dashboard_db;
+
 DROP TABLE IF EXISTS dept_manager;
 DROP TABLE IF EXISTS dept_emp;
 DROP TABLE IF EXISTS salaries;

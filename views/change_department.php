@@ -47,9 +47,12 @@ $departments = $pdo->query($sql)->fetchAll();
   <label>Department
     <select name="dept_no" required>
       <option value="">-- choose --</option>
+
+      <!-- UPDATED DROPDOWN WITH COUNTS -->
       <?php foreach($departments as $d): ?>
         <option value="<?= htmlspecialchars($d['dept_no']) ?>"><?= htmlspecialchars($d['dept_name']) ?> (<?= htmlspecialchars($d['employee_count']) ?> employees)</option>
       <?php endforeach; ?>
+
     </select>
   </label>
   <button>Change</button>
