@@ -37,19 +37,19 @@ if (session_status() === PHP_SESSION_NONE) {
 <header>
     <h2>Employee Management System</h2>
     <nav>
-        <a href="/views/index.php">Home</a>
-        <a href="/views/view_employees.php">View Employees</a>
+        <a href="/Employee-Manager-Systems/views/index.php">Home</a>
+        <a href="/Employee-Manager-Systems/views/view_employees.php">View Employees</a>
         <?php if (($_SESSION['role'] ?? '') === 'manager'): ?>
-        <a href="/views/add_employee.php">Add Employee</a>
-        <a href="/views/change_title.php">Change Title</a>
-        <a href="/views/update_salary.php">Update Salary</a>
-        <a href="/views/manager_info.php">Manager Info</a>
+        <a href="/Employee-Manager-Systems/views/add_employee.php">Add Employee</a>
+        <a href="/Employee-Manager-Systems/views/change_title.php">Change Title</a>
+        <a href="/Employee-Manager-Systems/views/update_salary.php">Update Salary</a>
+        <a href="/Employee-Manager-Systems/views/manager_info.php">Manager Info</a>
         <?php endif; ?>
-        <a href="/views/change_department.php">Change Department</a>
-        <a href="/views/department_summary.php">Department Summary</a>
-        <a href="/views/title_summary.php">Title Summary</a>
-        <a href="/views/managers_list.php">Managers</a>
-        <a href="/views/logout.php">Logout</a>
+        <a href="/Employee-Manager-Systems/views/change_department.php">Change Department</a>
+        <a href="/Employee-Manager-Systems/views/department_summary.php">Department Summary</a>
+        <a href="/Employee-Manager-Systems/views/title_summary.php">Title Summary</a>
+        <a href="/Employee-Manager-Systems/views/managers_list.php">Managers</a>
+        <a href="/Employee-Manager-Systems/views/logout.php">Logout</a>
     </nav>
 </header>
 <main style="padding: 20px;">
