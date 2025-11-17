@@ -1,4 +1,9 @@
 <!-- layout/header.php -->
+<?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -34,11 +39,16 @@
     <nav>
         <a href="/views/index.php">Home</a>
         <a href="/views/view_employees.php">View Employees</a>
+        <?php if (($_SESSION['role'] ?? '') === 'manager'): ?>
         <a href="/views/add_employee.php">Add Employee</a>
-        <a href="/views/change_department.php">Change Department</a>
         <a href="/views/change_title.php">Change Title</a>
         <a href="/views/update_salary.php">Update Salary</a>
+        <a href="/views/manager_info.php">Manager Info</a>
+        <?php endif; ?>
+        <a href="/views/change_department.php">Change Department</a>
         <a href="/views/department_summary.php">Department Summary</a>
+        <a href="/views/title_summary.php">Title Summary</a>
+        <a href="/views/managers_list.php">Managers</a>
         <a href="/views/logout.php">Logout</a>
     </nav>
 </header>

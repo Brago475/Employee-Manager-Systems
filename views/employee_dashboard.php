@@ -52,8 +52,8 @@ $employee = $stmt->fetch();
     <p><strong>Title End Date:</strong> <?= htmlspecialchars($employee['title_end'] ?? 'N/A'); ?></p>
     <p><strong>Current Salary:</strong> $<?= number_format($employee['salary'] ?? 0, 2); ?></p>
 
-    <?php if ($_SESSION['is_manager'] ?? false): ?>
-      <div class="actions" style="margin-top:30px; text-align:right;">
+    <div class="actions" style="margin-top:30px; text-align:right;">
+      <?php if (($_SESSION['role'] ?? '') === 'manager'): ?>
         <button class="action-btn" style="background-color:#007BFF; color:white; border:none; padding:10px 15px; margin:8px; border-radius:4px; cursor:pointer;"
           onclick="window.location='change_department.php?emp_no=<?= $emp_no ?>'">
           Change Department
@@ -70,8 +70,13 @@ $employee = $stmt->fetch();
           onclick="if(confirm('Are you sure you want to fire this employee?')) window.location='delete_employee.php?emp_no=<?= $emp_no ?>'">
           Fire Employee
         </button>
-      </div>
-    <?php endif; ?>
+      <?php else: ?>
+        <button class="action-btn" style="background-color:#007BFF; color:white; border:none; padding:10px 15px; margin:8px; border-radius:4px; cursor:pointer;"
+          onclick="window.location='change_department.php?emp_no=<?= $emp_no ?>'">
+          Change Department
+        </button>
+      <?php endif; ?>
+    </div>
 
   <?php else: ?>
     <p style="color:red; text-align:center;">Employee not found.</p>

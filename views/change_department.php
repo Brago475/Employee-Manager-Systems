@@ -30,7 +30,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $message = "<p style='color:red;text-align:center;'>emp_no and dept_no required.</p>";
   }
 }
-$departments = $pdo->query("SELECT dept_no, dept_name FROM departments ORDER BY dept_name ASC")->fetchAll();
+$sql = "
+SELECT d.dept_no, d.dept_name, COUNT(de.emp_no) AS employee_count
+FROM departments d
+LEFT JOIN dept_emp de
+  ON d.dept_no = de.dept_no
+ AND (de.to_date IS NULL OR de.to_date > CURRENT_DATE)
+GROUP BY d.dept_no, d.dept_name
+ORDER BY d.dept_name
+";
+$departments = $pdo->query($sql)->fetchAll();
 ?>
 <h2>Change Department</h2>
 <form method="post">
@@ -39,7 +48,7 @@ $departments = $pdo->query("SELECT dept_no, dept_name FROM departments ORDER BY 
     <select name="dept_no" required>
       <option value="">-- choose --</option>
       <?php foreach($departments as $d): ?>
-        <option value="<?= htmlspecialchars($d['dept_no']) ?>"><?= htmlspecialchars($d['dept_name']) ?></option>
+        <option value="<?= htmlspecialchars($d['dept_no']) ?>"><?= htmlspecialchars($d['dept_name']) ?> (<?= htmlspecialchars($d['employee_count']) ?> employees)</option>
       <?php endforeach; ?>
     </select>
   </label>

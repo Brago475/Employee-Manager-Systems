@@ -13,6 +13,8 @@ SELECT
   e.emp_no,
   e.first_name,
   e.last_name,
+  e.birth_date,
+  e.hire_date,
   d.dept_name,
   t.title,
   s.salary
@@ -36,7 +38,7 @@ $rows = $pdo->query($sql)->fetchAll();
 <table border="1" cellpadding="6" cellspacing="0">
   <thead>
     <tr>
-      <th>Emp #</th><th>Name</th><th>Department</th><th>Title</th><th>Salary</th><th>Actions</th>
+      <th>Emp #</th><th>Name</th><th>Department</th><th>Title</th><th>Salary</th><th>Hire Date</th><th>Birth Date</th><th>Actions</th>
     </tr>
   </thead>
   <tbody>
@@ -47,6 +49,8 @@ $rows = $pdo->query($sql)->fetchAll();
         <td><?= htmlspecialchars($r['dept_name'] ?? '') ?></td>
         <td><?= htmlspecialchars($r['title'] ?? '') ?></td>
         <td><?= htmlspecialchars($r['salary'] ?? '') ?></td>
+        <td><?= htmlspecialchars($r['hire_date'] ?? '') ?></td>
+        <td><?= htmlspecialchars($r['birth_date'] ?? '') ?></td>
         <td>
           <form method="POST" action="/api/employee.php?action=fire" style="display:inline;">
             <input type="hidden" name="emp_no" value="<?= htmlspecialchars($r['emp_no']) ?>">
