@@ -5,7 +5,7 @@ require_once __DIR__ . '/../layout/header.php';
 
 // Access Control: only managers can access this page
 if (!isset($_SESSION['is_manager']) || $_SESSION['is_manager'] !== true) {
-    die("<h3 style='color:red; text-align:center; margin-top:50px;'>Access Denied — Manager Privileges Required.</h3>");
+  die("<h3 style='color:red; text-align:center; margin-top:50px;'>Access Denied — Manager Privileges Required.</h3>");
 }
 
 $sql = "
@@ -38,23 +38,34 @@ $rows = $pdo->query($sql)->fetchAll();
 <table border="1" cellpadding="6" cellspacing="0">
   <thead>
     <tr>
-      <th>Emp #</th><th>Name</th><th>Department</th><th>Title</th><th>Salary</th><th>Hire Date</th><th>Birth Date</th><th>Actions</th>
+      <th>Emp #</th>
+      <th>Name</th>
+      <th>Department</th>
+      <th>Title</th>
+      <th>Salary</th>
+      <th>Hire Date</th>
+      <th>Birth Date</th>
+      <th>Actions</th>
     </tr>
   </thead>
   <tbody>
     <?php foreach ($rows as $r): ?>
       <tr>
         <td><?= htmlspecialchars($r['emp_no']) ?></td>
-        <td><?= htmlspecialchars($r['first_name'].' '.$r['last_name']) ?></td>
+        <td><?= htmlspecialchars($r['first_name'] . ' ' . $r['last_name']) ?></td>
         <td><?= htmlspecialchars($r['dept_name'] ?? '') ?></td>
         <td><?= htmlspecialchars($r['title'] ?? '') ?></td>
         <td><?= htmlspecialchars($r['salary'] ?? '') ?></td>
         <td><?= htmlspecialchars($r['hire_date'] ?? '') ?></td>
         <td><?= htmlspecialchars($r['birth_date'] ?? '') ?></td>
         <td>
-          <form method="POST" action="/api/employee.php?action=fire" style="display:inline;">
+          <form method="POST" action="/Employee-Manager-Systems/api/employee.php?action=fire" style="display:inline;">
             <input type="hidden" name="emp_no" value="<?= htmlspecialchars($r['emp_no']) ?>">
-            <button type="submit" onclick="return confirm('Are you sure you want to delete this employee?')">Delete</button>
+            <button onclick="fireEmployee(<?= $r['emp_no'] ?>)"
+              style="background:#dc3545;color:white;padding:6px 10px;border:none;border-radius:4px;cursor:pointer;">
+              Delete
+            </button>
+
           </form>
         </td>
       </tr>

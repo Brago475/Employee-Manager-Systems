@@ -141,5 +141,5 @@ try {
         $pdo->rollBack();
     }
     http_response_code(500);
-    echo json_encode(['ok' => false, 'error' => 'Server error']); // don't leak stack traces
+    echo json_encode(['ok' => false, 'error' =>$e->getMessage()]); // don't leak stack traces, gets the delete message 
 }

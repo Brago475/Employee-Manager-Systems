@@ -3,6 +3,11 @@ session_start();
 require_once __DIR__ . '/../database/db_connect.php';
 require_once __DIR__ . '/../layout/header.php';
 
+// Access Control: only managers can access this page
+if (!isset($_SESSION['is_manager']) || $_SESSION['is_manager'] !== true) {
+    die("<h3 style='color:red; text-align:center; margin-top:50px;'>Access Denied — Manager Privileges Required.</h3>");
+}
+
 // Redirect if not logged in
 if (!isset($_SESSION['emp_no'])) {
     header("Location: login.php");
