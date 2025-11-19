@@ -58,6 +58,7 @@ $employee = $stmt->fetch();
 
 <div class="container" style="width:80%; max-width:900px; margin:40px auto; background-color:white; padding:25px 30px; box-shadow:0 0 10px rgba(0,0,0,0.1); border-radius:8px;">
   <?php if ($employee): ?>
+    
     <h2 style="color:#333;">Welcome, <?= htmlspecialchars($employee['first_name'] . ' ' . $employee['last_name']); ?>!</h2>
 
     <p><strong>Birthdate:</strong> <?= htmlspecialchars($employee['birth_date'] ?? 'N/A'); ?></p>
@@ -65,51 +66,54 @@ $employee = $stmt->fetch();
     <p><strong>Department:</strong> <?= htmlspecialchars($employee['dept_name'] ?? 'N/A'); ?></p>
     <p><strong>Department Start Date:</strong> <?= htmlspecialchars($employee['dept_start'] ?? 'N/A'); ?></p>
     <p><strong>Department End Date:</strong> <?= htmlspecialchars($employee['dept_end'] ?? 'N/A'); ?></p>
+
     <p><strong>Current Title:</strong> <?= htmlspecialchars($employee['title'] ?? 'N/A'); ?></p>
     <p><strong>Title Start Date:</strong> <?= htmlspecialchars($employee['title_start'] ?? 'N/A'); ?></p>
     <p><strong>Title End Date:</strong> <?= htmlspecialchars($employee['title_end'] ?? 'N/A'); ?></p>
 
-    <!-- NEW: Manager Info -->
     <p><strong>Your Manager:</strong> 
         <?= htmlspecialchars(($employee['manager_first'] ?? '') . ' ' . ($employee['manager_last'] ?? 'N/A')); ?>
     </p>
 
-    <!-- Updated salary wording -->
     <p><strong>Your Current Salary:</strong> 
         $<?= number_format($employee['salary'] ?? 0, 2); ?>
     </p>
 
+    <!-- ACTION BUTTONS (Managers only) -->
     <div class="actions" style="margin-top:30px; text-align:right;">
+      
       <?php if (($_SESSION['role'] ?? '') === 'manager'): ?>
-        <button class="action-btn" style="background-color:#007BFF; color:white; border:none; padding:10px 15px; margin:8px; border-radius:4px; cursor:pointer;"
+
+        <button class="action-btn" 
+          style="background-color:#007BFF; color:white; border:none; padding:10px 15px; margin:8px; border-radius:4px; cursor:pointer;"
           onclick="window.location='change_department.php?emp_no=<?= $emp_no ?>'">
           Change Department
         </button>
 
-        <button class="action-btn" style="background-color:#007BFF; color:white; border:none; padding:10px 15px; margin:8px; border-radius:4px; cursor:pointer;"
+        <button class="action-btn" 
+          style="background-color:#007BFF; color:white; border:none; padding:10px 15px; margin:8px; border-radius:4px; cursor:pointer;"
           onclick="window.location='change_title.php?emp_no=<?= $emp_no ?>'">
           Change Title
         </button>
 
-        <button class="action-btn" style="background-color:#007BFF; color:white; border:none; padding:10px 15px; margin:8px; border-radius:4px; cursor:pointer;"
+        <button class="action-btn" 
+          style="background-color:#007BFF; color:white; border:none; padding:10px 15px; margin:8px; border-radius:4px; cursor:pointer;"
           onclick="window.location='update_salary.php?emp_no=<?= $emp_no ?>'">
           Change Salary
         </button>
 
-        <button class="fire-btn" style="background-color:#DC3545; color:white; border:none; padding:10px 15px; margin:8px; border-radius:4px; cursor:pointer;"
+        <button class="fire-btn" 
+          style="background-color:#DC3545; color:white; border:none; padding:10px 15px; margin:8px; border-radius:4px; cursor:pointer;"
           onclick="if(confirm('Are you sure you want to fire this employee?')) window.location='delete_employee.php?emp_no=<?= $emp_no ?>'">
           Fire Employee
         </button>
-      <?php else: ?>
-        <button class="action-btn" style="background-color:#007BFF; color:white; border:none; padding:10px 15px; margin:8px; border-radius:4px; cursor:pointer;"
-          onclick="window.location='change_department.php?emp_no=<?= $emp_no ?>'">
-          Change Department
-        </button>
+
       <?php endif; ?>
+
     </div>
 
   <?php else: ?>
-    <p style="color:red; text-align:center;">Employee not found.</p>
+      <p style="color:red; text-align:center;">Employee not found.</p>
   <?php endif; ?>
 </div>
 
