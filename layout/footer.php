@@ -1,5 +1,11 @@
-<!-- layout/footer.php -->
 </main>
+
+<style>
+    body {
+        padding-bottom: 70px; /* creates space so footer doesn't cover the table */
+    }
+</style>
+
 <footer style="
     background-color: #222;
     color: white;
@@ -12,5 +18,6 @@
 ">
     <p>&copy; <?= date('Y') ?> Employee Management System</p>
 </footer>
+
 </body>
 </html>

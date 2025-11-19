@@ -3,7 +3,7 @@
 require_once __DIR__ . '/../config.php';
 
 $host = env_or_default('DB_HOST', 'localhost');
-$port = env_or_default('DB_PORT', '3311');
+$port = env_or_default('DB_PORT', '3306');
 $db   = env_or_default('DB_NAME', 'employee_dashboard_db');
 $user = env_or_default('DB_USER', 'root');
 $pass = env_or_default('DB_PASS', '');

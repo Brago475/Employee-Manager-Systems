@@ -35,6 +35,7 @@ ORDER BY e.emp_no
 $rows = $pdo->query($sql)->fetchAll();
 ?>
 <h2>Employees</h2>
+<script src="/Employee-Manager-Systems/js/actions.js"></script>
 <table border="1" cellpadding="6" cellspacing="0">
   <thead>
     <tr>
@@ -59,12 +60,12 @@ $rows = $pdo->query($sql)->fetchAll();
         <td><?= htmlspecialchars($r['hire_date'] ?? '') ?></td>
         <td><?= htmlspecialchars($r['birth_date'] ?? '') ?></td>
         <td>
-          <form method="POST" action="/Employee-Manager-Systems/api/employee.php?action=fire" style="display:inline;">
-            <input type="hidden" name="emp_no" value="<?= htmlspecialchars($r['emp_no']) ?>">
+
             <button onclick="fireEmployee(<?= $r['emp_no'] ?>)"
-              style="background:#dc3545;color:white;padding:6px 10px;border:none;border-radius:4px;cursor:pointer;">
-              Delete
-            </button>
+  style="background:#dc3545;color:white;padding:6px 10px;border:none;border-radius:4px;cursor:pointer;">
+  Delete
+</button>
+
 
           </form>
         </td>
