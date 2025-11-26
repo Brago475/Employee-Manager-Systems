@@ -2,6 +2,13 @@
 
 header('Content-Type: application/json');
 require_once __DIR__ . '/../database/db_connect.php';
+require_once __DIR__ . '/../views/Auditlogger.php';
+
+$auditLogger = new AuditLogger($pdo);
+
+// get manager emp_no from session 
+session_start();
+$manager_emp_no = $_SESSION['emp_no'] ?? null;
 
 function bad_request($msg, $code = 400) {
     http_response_code($code);
@@ -68,11 +75,46 @@ try {
             if ($emp_no <= 0 || $new_salary <= 0) {
                 bad_request('emp_no and new_salary required');
             }
+            
+            $old_salary = $auditLogger->getCurrentSalary($emp_no);
+            
+            if ($old_salary == $new_salary) {
+                ok(['message' => 'Salary unchanged', 'old_salary' => $old_salary, 'new_salary' => $new_salary]);
+            }
+            
             $pdo->beginTransaction();
-            $pdo->prepare("UPDATE salaries SET to_date = CURRENT_DATE WHERE emp_no = ? AND (to_date IS NULL OR to_date > CURRENT_DATE)")->execute([$emp_no]);
-            $pdo->prepare("INSERT INTO salaries(emp_no, salary, from_date, to_date) VALUES(?, ?, CURRENT_DATE, NULL)")->execute([$emp_no, $new_salary]);
+            
+            // check if there's already a salary record starting today
+            $today_check = $pdo->prepare("SELECT COUNT(*) FROM salaries WHERE emp_no = ? AND from_date = CURRENT_DATE");
+            $today_check->execute([$emp_no]);
+            $exists_today = $today_check->fetchColumn() > 0;
+            
+            if ($exists_today) {
+                $pdo->prepare("UPDATE salaries SET salary = ? WHERE emp_no = ? AND from_date = CURRENT_DATE")
+                    ->execute([$new_salary, $emp_no]);
+            } else {
+                $pdo->prepare("UPDATE salaries SET to_date = DATE_SUB(CURRENT_DATE, INTERVAL 1 DAY) WHERE emp_no = ? AND (to_date IS NULL OR to_date >= CURRENT_DATE)")
+                    ->execute([$emp_no]);
+                
+                $pdo->prepare("INSERT INTO salaries(emp_no, salary, from_date, to_date) VALUES(?, ?, CURRENT_DATE, NULL)")
+                    ->execute([$emp_no, $new_salary]);
+                
+                if ($old_salary) {
+                    $pdo->prepare("
+                        INSERT INTO salaries_history (emp_no, salary, from_date, to_date, changed_by)
+                        SELECT emp_no, salary, from_date, to_date, ?
+                        FROM salaries
+                        WHERE emp_no = ? AND to_date = DATE_SUB(CURRENT_DATE, INTERVAL 1 DAY)
+                    ")->execute([$manager_emp_no, $emp_no]);
+                }
+            }
+            
+            if ($manager_emp_no) {
+                $auditLogger->logSalaryModification($manager_emp_no, $emp_no, $old_salary ?: 0, $new_salary);
+            }
+            
             $pdo->commit();
-            ok();
+            ok(['old_salary' => $old_salary, 'new_salary' => $new_salary]);
             break;
 
         case 'change_department':
@@ -81,11 +123,38 @@ try {
             if ($emp_no <= 0 || $dept_no === '') {
                 bad_request('emp_no and dept_no required');
             }
+            
+            // get old department for audit log
+            $old_dept = $auditLogger->getCurrentDepartment($emp_no);
+            
+            // get new department name
+            $newDeptStmt = $pdo->prepare("SELECT dept_name FROM departments WHERE dept_no = ?");
+            $newDeptStmt->execute([$dept_no]);
+            $new_dept = $newDeptStmt->fetchColumn();
+            
             $pdo->beginTransaction();
+            
             $pdo->prepare("UPDATE dept_emp SET to_date = CURRENT_DATE WHERE emp_no = ? AND (to_date IS NULL OR to_date > CURRENT_DATE)")->execute([$emp_no]);
+            
             $pdo->prepare("INSERT INTO dept_emp(emp_no, dept_no, from_date, to_date) VALUES(?, ?, CURRENT_DATE, NULL)")->execute([$emp_no, $dept_no]);
+            
+            // creates history record
+            if ($old_dept) {
+                $pdo->prepare("
+                    INSERT INTO dept_emp_history (emp_no, dept_no, from_date, to_date, changed_by)
+                    SELECT emp_no, dept_no, from_date, CURRENT_DATE, ?
+                    FROM dept_emp
+                    WHERE emp_no = ? AND to_date = CURRENT_DATE
+                ")->execute([$manager_emp_no, $emp_no]);
+            }
+            
+            // log the action meaning everthing is being track
+            if ($manager_emp_no) {
+                $auditLogger->logDepartmentChange($manager_emp_no, $emp_no, $old_dept ?: 'None', $new_dept);
+            }
+            
             $pdo->commit();
-            ok();
+            ok(['old_department' => $old_dept, 'new_department' => $new_dept]);
             break;
 
         case 'change_title':
@@ -94,11 +163,34 @@ try {
             if ($emp_no <= 0 || $title === '') {
                 bad_request('emp_no and title required');
             }
+            
+            // get old title for audit log
+            $old_title = $auditLogger->getCurrentTitle($emp_no);
+            
             $pdo->beginTransaction();
+            
+            // close current title
             $pdo->prepare("UPDATE titles SET to_date = CURRENT_DATE WHERE emp_no = ? AND (to_date IS NULL OR to_date > CURRENT_DATE)")->execute([$emp_no]);
+            
+            // insert new title
             $pdo->prepare("INSERT INTO titles(emp_no, title, from_date, to_date) VALUES(?, ?, CURRENT_DATE, NULL)")->execute([$emp_no, $title]);
+            
+            // create history record
+            if ($old_title) {
+                $pdo->prepare("
+                    INSERT INTO titles_history (emp_no, title, from_date, to_date, changed_by)
+                    SELECT emp_no, title, from_date, CURRENT_DATE, ?
+                    FROM titles
+                    WHERE emp_no = ? AND to_date = CURRENT_DATE
+                ")->execute([$manager_emp_no, $emp_no]);
+            }
+            
+            if ($manager_emp_no) {
+                $auditLogger->logTitleUpdate($manager_emp_no, $emp_no, $old_title ?: 'None', $title);
+            }
+            
             $pdo->commit();
-            ok();
+            ok(['old_title' => $old_title, 'new_title' => $title]);
             break;
 
         case 'fire':
@@ -106,8 +198,18 @@ try {
             if ($emp_no <= 0) {
                 bad_request('emp_no required');
             }
+            
+            $empStmt = $pdo->prepare("SELECT CONCAT(first_name, ' ', last_name) as name FROM employees WHERE emp_no = ?");
+            $empStmt->execute([$emp_no]);
+            $emp_name = $empStmt->fetchColumn();
+            
+            if ($manager_emp_no && $emp_name) {
+                $auditLogger->logEmployeeFired($manager_emp_no, $emp_no, $emp_name);
+            }
+            
             $pdo->prepare("DELETE FROM employees WHERE emp_no = ?")->execute([$emp_no]);
-            ok();
+            
+            ok(['fired_employee' => $emp_name]);
             break;
 
         case 'list_departments':
@@ -141,5 +243,5 @@ try {
         $pdo->rollBack();
     }
     http_response_code(500);
-    echo json_encode(['ok' => false, 'error' =>$e->getMessage()]); // don't leak stack traces, gets the delete message 
+    echo json_encode(['ok' => false, 'error' => $e->getMessage()]);
 }
