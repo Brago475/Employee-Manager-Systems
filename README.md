@@ -418,7 +418,9 @@ POST /views/change_department.php
    - Check Apache user has read access
 
 
+## 📄 License
 
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ---
 
