@@ -4,6 +4,9 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
+
+// get current page filename for active highlighting
+$current_page = basename($_SERVER['PHP_SELF']);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -104,6 +107,17 @@ if (session_status() === PHP_SESSION_NONE) {
             transform: translateY(0);
         }
         
+        nav a.active {
+            background-color: rgba(255, 255, 255, 0.25);
+            border-color: rgba(255, 255, 255, 0.35);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            border-bottom: 2px solid #ffd700;
+        }
+        
+        nav a.active:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+        }
+        
         nav a.primary-link {
             background-color: rgba(255, 255, 255, 0.15);
             border: 1px solid rgba(255, 255, 255, 0.25);
@@ -131,6 +145,11 @@ if (session_status() === PHP_SESSION_NONE) {
             box-shadow: 0 4px 12px rgba(25, 118, 210, 0.4);
         }
         
+        nav a.bulk-actions-link.active {
+            background: linear-gradient(135deg, #1e88e5 0%, #1976d2 100%);
+            box-shadow: 0 4px 12px rgba(25, 118, 210, 0.5);
+        }
+        
         /* audit Logs is highlighted */
         nav a.audit-logs-link {
             background: linear-gradient(135deg, #ffffff 0%, #f0f8ff 100%);
@@ -147,6 +166,11 @@ if (session_status() === PHP_SESSION_NONE) {
             transform: translateY(-2px);
             box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
             border-color: rgba(0, 82, 163, 0.3);
+        }
+        
+        nav a.audit-logs-link.active {
+            background: white;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
         }
         
         nav a.logout-link {
@@ -287,38 +311,38 @@ if (session_status() === PHP_SESSION_NONE) {
 
         <nav>
             <!-- everyone sees home -->
-            <a href="/Employee-Manager-Systems/views/index.php" class="primary-link">Home</a>
+            <a href="/Employee-Manager-Systems/views/index.php" class="primary-link <?= ($current_page == 'index.php' || $current_page == 'employee_dashboard.php' || $current_page == 'manager_dashboard.php') ? 'active' : '' ?>">Home</a>
 
             <!-- manager only -->
             <?php if (!empty($_SESSION['is_manager']) && $_SESSION['is_manager'] === true): ?>
                 
                 <div class="nav-separator"></div>
 
-                <a href="/Employee-Manager-Systems/views/view_employees.php">View Employees</a>
-                <a href="/Employee-Manager-Systems/views/add_employee.php">Add Employee</a>
+                <a href="/Employee-Manager-Systems/views/view_employees.php" class="<?= $current_page == 'view_employees.php' ? 'active' : '' ?>">View Employees</a>
+                <a href="/Employee-Manager-Systems/views/add_employee.php" class="<?= $current_page == 'add_employee.php' ? 'active' : '' ?>">Add Employee</a>
                 
                 <!-- bulk -->
-                <a href="/Employee-Manager-Systems/views/bulk_actions.php" class="bulk-actions-link">Bulk Actions</a>
+                <a href="/Employee-Manager-Systems/views/bulk_actions.php" class="bulk-actions-link <?= $current_page == 'bulk_actions.php' ? 'active' : '' ?>">Bulk Actions</a>
                 
-                <a href="/Employee-Manager-Systems/views/change_department.php">Change Department</a>
-                <a href="/Employee-Manager-Systems/views/change_title.php">Change Title</a>
-                <a href="/Employee-Manager-Systems/views/update_salary.php">Update Salary</a>
+                <a href="/Employee-Manager-Systems/views/change_department.php" class="<?= $current_page == 'change_department.php' ? 'active' : '' ?>">Change Department</a>
+                <a href="/Employee-Manager-Systems/views/change_title.php" class="<?= $current_page == 'change_title.php' ? 'active' : '' ?>">Change Title</a>
+                <a href="/Employee-Manager-Systems/views/update_salary.php" class="<?= $current_page == 'update_salary.php' ? 'active' : '' ?>">Update Salary</a>
                 
                 <div class="nav-separator"></div>
                 
-                <a href="/Employee-Manager-Systems/views/department_summary.php">Department Summary</a>
-                <a href="/Employee-Manager-Systems/views/title_summary.php">Title Summary</a>
+                <a href="/Employee-Manager-Systems/views/department_summary.php" class="<?= $current_page == 'department_summary.php' ? 'active' : '' ?>">Department Summary</a>
+                <a href="/Employee-Manager-Systems/views/title_summary.php" class="<?= $current_page == 'title_summary.php' ? 'active' : '' ?>">Title Summary</a>
                 
                 <div class="nav-separator"></div>
                 
                 <!--audit -->
-                <a href="/Employee-Manager-Systems/views/audit_logs.php" class="audit-logs-link">Audit Logs</a>
+                <a href="/Employee-Manager-Systems/views/audit_logs.php" class="audit-logs-link <?= $current_page == 'audit_logs.php' ? 'active' : '' ?>">Audit Logs</a>
 
             <?php endif; ?>
 
             <div class="nav-separator"></div>
 
-            <a href="/Employee-Manager-Systems/views/managers_list.php">Managers</a>
+            <a href="/Employee-Manager-Systems/views/managers_list.php" class="<?= $current_page == 'managers_list.php' ? 'active' : '' ?>">Managers</a>
 
             <?php if (isset($_SESSION['emp_no'])): ?>
                 <div class="user-info">

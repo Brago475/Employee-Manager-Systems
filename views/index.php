@@ -2,7 +2,7 @@
 // index.php
 session_start();
 
-// Redirect logged-in users directly
+// redirect logged users directly
 if (isset($_SESSION['emp_no'])) {
     if (!empty($_SESSION['is_manager']) && $_SESSION['is_manager'] === true) {
         header("Location: manager_dashboard.php");

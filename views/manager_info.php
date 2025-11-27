@@ -11,7 +11,7 @@ if (!isset($_SESSION['emp_no'])) {
 
 $emp_no = $_SESSION['emp_no'];
 
-// Fetch manager's own information (current records only)
+// gets current records only
 $sql = "
 SELECT 
   e.emp_no,

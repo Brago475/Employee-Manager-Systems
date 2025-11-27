@@ -5,7 +5,6 @@ require_once __DIR__ . '/../layout/header.php';
 
 if (!isset($_SESSION['is_manager']) || $_SESSION['is_manager'] !== true) {
     die("<div class='access-denied'>
-            <div class='denied-icon'>🔒</div>
             <h2>Access Denied</h2>
             <p>Manager Privileges Required</p>
         </div>");
@@ -85,11 +84,6 @@ $avg_salary = $total_employees > 0 ? $total_salary / $total_employees : 0;
     text-align: center;
     margin-top: 100px;
     padding: 40px;
-}
-
-.denied-icon {
-    font-size: 64px;
-    margin-bottom: 20px;
 }
 
 .access-denied h2 {
@@ -370,11 +364,6 @@ $avg_salary = $total_employees > 0 ? $total_salary / $total_employees : 0;
     color: #666;
 }
 
-.empty-state-icon {
-    font-size: 64px;
-    margin-bottom: 20px;
-    opacity: 0.5;
-}
 
 .empty-state h3 {
     font-size: 20px;
@@ -505,7 +494,6 @@ $avg_salary = $total_employees > 0 ? $total_salary / $total_employees : 0;
     
     <?php if (empty($rows)): ?>
         <div class="empty-state">
-            <div class="empty-state-icon">📭</div>
             <h3>No Employees Found</h3>
             <p>Try adjusting your filters or search terms</p>
         </div>

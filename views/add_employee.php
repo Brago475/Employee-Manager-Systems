@@ -4,10 +4,10 @@ require_once __DIR__ . '/../database/db_connect.php';
 require_once __DIR__ . '/../views/Auditlogger.php';
 require_once __DIR__ . '/../layout/header.php';
 
-// Initialize audit logger
+// initialize audit logger
 $auditLogger = new AuditLogger($pdo);
 
-// Only managers can add employees
+// only managers can add employees
 if (!isset($_SESSION['is_manager']) || $_SESSION['is_manager'] !== true) {
     die("<div class='access-denied-container'>
             <div class='access-denied-card'>
@@ -37,7 +37,7 @@ $departments = $pdo->query("
     ORDER BY d.dept_name ASC
 ")->fetchAll(PDO::FETCH_ASSOC);
 
-// Fetch titles
+// gets all the titles
 $titles = $pdo->query("
     SELECT title, COUNT(*) AS employee_count
     FROM titles
