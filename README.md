@@ -35,7 +35,7 @@ The **Employee-Manager-Systems** is a robust PHP-based web application designed 
 |------|------|-----------------|
 | **James** | Full Stack Developer | Core features, backend logic, UI structure, and database integration |
 | **Alex** | Full Stack Developer | Frontend/backend integration, system workflow development |
-| **Yorfi** | Team Leader | Project oversight, task organization, team coordination |
+| **Yorfi** | Full Stack Developer | Database and backend fixes, creating and updating pages, and making core features work |
 | **Alka** | Testing & Documentation | Quality assurance, documentation, testing protocols |
 
 ## ✨ Features
